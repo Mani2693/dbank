@@ -4,18 +4,26 @@ pragma solidity >=0.6.0 <0.8.0;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract Token is ERC20 {
-  //add minter variable
+  address public minter;
+  
+  event minterChanged(address indexed from, address to);
 
-  //add minter changed event
+  constructor() public payable ERC20("Decentralized Bank Currency", "DBC") {
+    minter = msg.sender;
+  }
 
-  constructor() public payable ERC20("Name", "Symbol") {
-    //asign initial minter
+  function passMinterRole(address dBank) public returns(bool) {
+    require(msg.sender == minter, 'Error, only owner can pass this mentor role');
+    minter = dBank;
+
+    emit minterChanged(msg.sender, dBank);
+    return true;
   }
 
   //Add pass minter role function
 
   function mint(address account, uint256 amount) public {
-    //check if msg.sender have minter role
+    require(msg.sender == minter, 'Error, only owner can pass this mentor role');
 		_mint(account, amount);
 	}
 }
